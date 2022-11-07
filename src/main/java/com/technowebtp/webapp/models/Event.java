@@ -1,9 +1,9 @@
 package com.technowebtp.webapp.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Event {
@@ -11,4 +11,13 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    private Date date;
+
+    private float valeur;
+
+    @OneToMany
+    private List<Tag> tags = new ArrayList<>();
+
+    private String commentaire;
 }

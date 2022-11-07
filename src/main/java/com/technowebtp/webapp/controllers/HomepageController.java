@@ -12,7 +12,7 @@ public class HomepageController {
         return "index";
     }
 
-    @RequestMapping("/hello")
+    @GetMapping("/hello")
     public String showhello(){
         return "hello";
     }

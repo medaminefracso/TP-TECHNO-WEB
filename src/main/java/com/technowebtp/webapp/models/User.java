@@ -14,5 +14,6 @@ public class User {
     private String login;
 
     @OneToMany
+    @JoinTable(name="userToSeries")
     private List<Serie> series = new ArrayList<>();
 }

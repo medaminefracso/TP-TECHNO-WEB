@@ -16,5 +16,6 @@ public class Serie {
     private String description;
 
     @OneToMany
+    @JoinTable(name="serieToEvents")
     private List<Event> events = new ArrayList<>();
 }

@@ -17,6 +17,7 @@ public class Event {
     private float valeur;
 
     @OneToMany
+    @JoinTable(name="eventToTags")
     private List<Tag> tags = new ArrayList<>();
 
     private String commentaire;

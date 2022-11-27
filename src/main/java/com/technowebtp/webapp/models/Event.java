@@ -1,11 +1,16 @@
 package com.technowebtp.webapp.models;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 @Entity
+@Getter @Setter
 public class Event {
 
     @Id
@@ -14,7 +19,7 @@ public class Event {
 
     private Date date;
 
-    private float valeur;
+    private double valeur;
 
     @OneToMany
     @JoinTable(name="eventToTags")

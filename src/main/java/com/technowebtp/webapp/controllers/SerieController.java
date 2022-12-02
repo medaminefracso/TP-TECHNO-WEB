@@ -5,10 +5,12 @@ import com.technowebtp.webapp.models.Serie;
 import com.technowebtp.webapp.repositories.SerieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -61,13 +63,13 @@ public class SerieController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/series")
-    public @ResponseBody Event getSeries(@PathVariable Integer serieId) {
-        Event event = new Event();
-        event.setCommentaire("This is a comment on this event");
-        event.setValeur(7305);
+    @GetMapping(value = "/series", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ResponseBody
+    public List<Serie> getSeries() {
 
-        return event;
+        List<Serie> series = serieRepository.findAll();
+
+        return series;
     }
 
     @GetMapping(value = "/series/{eventId}")

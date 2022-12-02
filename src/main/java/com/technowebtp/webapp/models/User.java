@@ -17,6 +17,10 @@ public class User {
 
     private String login;
 
+
+    // Pour definir les droits des utilisateurs
+    private String role;
+
     @OneToMany
     @JoinTable(name="userToSeries")
     private List<Serie> series = new ArrayList<>();

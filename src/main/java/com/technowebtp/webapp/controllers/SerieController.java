@@ -2,8 +2,13 @@ package com.technowebtp.webapp.controllers;
 
 import com.technowebtp.webapp.models.Event;
 import com.technowebtp.webapp.models.Serie;
+import com.technowebtp.webapp.models.User;
+import com.technowebtp.webapp.repositories.EventRepository;
 import com.technowebtp.webapp.repositories.SerieRepository;
+import com.technowebtp.webapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +25,21 @@ public class SerieController {
     @Autowired
     private SerieRepository serieRepository;
 
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping(path = "/series")
     @ResponseBody
-    public ResponseEntity createSerie(@RequestBody Serie serie) {
+    public ResponseEntity createSerie(@RequestBody Serie serie, @RequestParam(value = "user", required = true) Long userId) {
 
+        User user = userRepository.findById(userId).get();
+
+        if(user != null) {
+            serie.setCreator(user.getLogin());
+        }
         serieRepository.save(serie);
 
         return ResponseEntity.ok(HttpStatus.OK);
@@ -31,12 +47,15 @@ public class SerieController {
 
     @DeleteMapping(value = "/series/{serieId}")
     @ResponseBody
-    public ResponseEntity deleteSerie(@PathVariable Long serieId) {
+    public ResponseEntity deleteSerie(@PathVariable Long serieId, @RequestParam(value = "user", required = true) Long userId) {
 
         Optional<Serie> serie = serieRepository.findById(serieId);
 
-        serieRepository.delete(serie.get());
+        User user = userRepository.findById(userId).get();
+        if(user != null && user.getLogin().equals(serie.get().getCreator())) {
 
+            serieRepository.delete(serie.get());
+        }
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
@@ -63,6 +82,11 @@ public class SerieController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    /**
+     * get all series
+     * @return
+     */
+    @CachePut(value = "series")
     @GetMapping(value = "/series", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @ResponseBody
     public List<Serie> getSeries() {
@@ -72,26 +96,31 @@ public class SerieController {
         return series;
     }
 
-    @GetMapping(value = "/series/{eventId}")
-    public @ResponseBody Event getSerie(@PathVariable Integer serieId) {
-        Event event = new Event();
-        event.setCommentaire("This is a comment on this event");
-        event.setValeur(7305);
+    /**
+     * get one serie
+     * @return
+     */
+    @GetMapping(value = "/series/{serieId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ResponseBody
+    public Serie getSerie(@PathVariable Long serieId) {
 
-        return event;
+        return serieRepository.findById(serieId).get();
     }
 
-/*
-    @PostMapping(value = "/series/{eventId}")
-    public @ResponseBody Event updateSerie(@PathVariable Integer serieId) {
-        Event event = new Event();
-        event.setCommentaire("This is a comment on this event");
-        event.setValeur(7305);
+    /**
+     * add event to a serie
+     * @return
+     */
+    @PatchMapping(path = "/series/{serieId}/addEvent/{eventId}")
+    @ResponseBody
+    public ResponseEntity addEvent(@PathVariable Long serieId, @PathVariable Long eventId) {
 
-        return event;
+        Serie serie = serieRepository.findById(serieId).get();
+        Event event = eventRepository.findById(eventId).get();
+        serie.addEvent(event);
+
+        serieRepository.save(serie);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
-
- */
-
 
 }

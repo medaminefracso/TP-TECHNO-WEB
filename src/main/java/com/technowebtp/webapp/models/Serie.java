@@ -19,7 +19,23 @@ public class Serie {
 
     private String description;
 
+    // L'utilisateur qui a cree la serie
+    private String creator;
+
+    //Ici on peut dire si la série, peut être partagée ou pas,
+    //Elle peut avoir comme valeur
+    /**
+     * Ici on peut dire si la série, peut être partagée ou pas,
+     * Elle peut avoir comme valeur :
+     * no-access, lecture, écriture, all-access
+     */
+    private String access;
+
     @OneToMany
     @JoinTable(name="serieToEvents")
     private List<Event> events = new ArrayList<>();
+
+    public void addEvent(Event event) {
+        this.events.add(event);
+    }
 }

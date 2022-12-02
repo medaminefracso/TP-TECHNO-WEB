@@ -5,7 +5,9 @@ import com.technowebtp.webapp.models.Serie;
 import com.technowebtp.webapp.models.User;
 import com.technowebtp.webapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -65,6 +68,31 @@ public class UserController {
         userRepository.save(user.get());
 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    /**
+     * get all users
+     * @return
+     */
+    @CachePut(value = "users")
+    @GetMapping(value = "/users", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ResponseBody
+    public List<User> getUsers() {
+
+        List<User> users = userRepository.findAll();
+
+        return users;
+    }
+
+    /**
+     * get one user
+     * @return
+     */
+    @GetMapping(value = "/users/{userId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ResponseBody
+    public User getEvent(@PathVariable Long userId) {
+
+        return userRepository.findById(userId).get();
     }
 
 }

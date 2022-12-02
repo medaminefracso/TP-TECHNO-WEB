@@ -6,12 +6,15 @@ import com.technowebtp.webapp.models.User;
 import com.technowebtp.webapp.repositories.TagRepository;
 import com.technowebtp.webapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -56,4 +59,30 @@ public class TagController {
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
+    /**
+     * get all tags
+     * @return
+     */
+    @CachePut(value = "tags")
+    @GetMapping(value = "/tags", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ResponseBody
+    public List<Tag> getTags() {
+
+        List<Tag> tags = tagRepository.findAll();
+
+        return tags;
+    }
+
+    /**
+     * get single tag
+     * @return
+     */
+    @GetMapping(value = "/tags/{tagId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ResponseBody
+    public Tag getTag(@PathVariable Long tagId) {
+
+        return tagRepository.findById(tagId).get();
+    }
+
 }

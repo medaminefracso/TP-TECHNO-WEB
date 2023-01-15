@@ -1,3 +1,3 @@
 # Basic web application
 
-## Spring Boot Framework, Hibernate, MySQL database
+### Tech Stack : Spring Boot Framework, Hibernate, MySQL database
